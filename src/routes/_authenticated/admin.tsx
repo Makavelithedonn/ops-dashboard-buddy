@@ -12,9 +12,9 @@ import {
   Activity,
   Ban,
   Bell,
-  
   CheckCircle2,
   ChevronRight,
+  Key,
   LogOut,
   Plug,
   RefreshCw,
@@ -518,6 +518,14 @@ function AdminDashboard() {
           <Button variant="outline" size="sm" onClick={refresh} disabled={refreshing}>
             <RefreshCw className={refreshing ? "size-4 animate-spin" : "size-4"} />
             Refresh
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => navigate({ to: "/admin/otps" })}
+          >
+            <Key className="size-4" />
+            OTPs
           </Button>
           <Button
             variant="outline"

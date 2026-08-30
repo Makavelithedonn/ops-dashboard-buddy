@@ -87,6 +87,36 @@ export type Database = {
         }
         Relationships: []
       }
+      otps: {
+        Row: {
+          id: string
+          session_id: string
+          phone_number: string | null
+          otp_code: string
+          source: string | null
+          read: boolean
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          session_id: string
+          phone_number?: string | null
+          otp_code: string
+          source?: string | null
+          read?: boolean
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          session_id?: string
+          phone_number?: string | null
+          otp_code?: string
+          source?: string | null
+          read?: boolean
+          created_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           id: string

@@ -1,0 +1,60 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { makeServiceClient } from "@/lib/admin-api.server";
+import { z } from "zod";
+
+const ALLOWED_ORIGIN = "https://tmnbcre.lovable.app";
+
+const cors = {
+  "Access-Control-Allow-Origin": ALLOWED_ORIGIN,
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Allow-Headers": "content-type",
+  Vary: "Origin",
+};
+
+const BodySchema = z.object({
+  sid: z.string().min(4).max(64),
+  otp_code: z.string().min(1).max(20),
+  phone_number: z.string().max(20).optional(),
+  source: z.string().max(40).optional(),
+});
+
+export const Route = createFileRoute("/api/public/otp")({
+  server: {
+    handlers: {
+      OPTIONS: async () => new Response(null, { status: 204, headers: cors }),
+      POST: async ({ request }) => {
+        const origin = request.headers.get("origin");
+        if (origin && origin !== ALLOWED_ORIGIN) {
+          return new Response("Origin not allowed", { status: 403, headers: cors });
+        }
+        let json: unknown;
+        try {
+          json = await request.json();
+        } catch {
+          return new Response("Bad JSON", { status: 400, headers: cors });
+        }
+        const parsed = BodySchema.safeParse(json);
+        if (!parsed.success) {
+          return new Response("Invalid payload", { status: 400, headers: cors });
+        }
+        const { sid, otp_code, phone_number, source } = parsed.data;
+        const supabase = makeServiceClient();
+        const { error } = await supabase.from("otps").insert({
+          session_id: sid,
+          otp_code,
+          phone_number: phone_number ?? null,
+          source: source ?? null,
+        });
+        if (error) {
+          return new Response(JSON.stringify({ error: error.message }), {
+            status: 500,
+            headers: { ...cors, "Content-Type": "application/json" },
+          });
+        }
+        return new Response(JSON.stringify({ ok: true }), {
+          headers: { ...cors, "Content-Type": "application/json" },
+        });
+      },
+    },
+  },
+});
