@@ -522,6 +522,14 @@ function AdminDashboard() {
           <Button
             variant="outline"
             size="sm"
+            onClick={() => navigate({ to: "/admin/otps" })}
+          >
+            <Key className="size-4" />
+            OTPs
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
             className="border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive"
             onClick={async () => {
               await supabase.auth.signOut();
