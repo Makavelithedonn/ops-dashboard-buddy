@@ -1,16 +1,14 @@
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "./types";
 
-const SUPABASE_URL =
-  (import.meta.env.VITE_SUPABASE_URL as string | undefined) ??
-  (typeof process !== "undefined" ? (process.env.SUPABASE_URL as string | undefined) : undefined) ??
-  "";
+const env = import.meta.env as Record<string, string | undefined>;
+const proc = (typeof process !== "undefined" ? process.env : {}) as Record<
+  string,
+  string | undefined
+>;
+const SUPABASE_URL = env["VITE_SUPABASE_URL"] ?? proc["SUPABASE_URL"] ?? "";
 const SUPABASE_PUBLISHABLE_KEY =
-  (import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string | undefined) ??
-  (typeof process !== "undefined"
-    ? (process.env.SUPABASE_PUBLISHABLE_KEY as string | undefined)
-    : undefined) ??
-  "";
+  env["VITE_SUPABASE_PUBLISHABLE_KEY"] ?? proc["SUPABASE_PUBLISHABLE_KEY"] ?? "";
 
 // sb_publishable_* keys are opaque (not JWTs). The default supabase-js client
 // sends them as Authorization: Bearer <key>, which PostgREST rejects with
