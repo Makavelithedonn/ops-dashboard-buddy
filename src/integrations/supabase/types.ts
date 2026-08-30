@@ -236,6 +236,36 @@ export type Database = {
           },
         ]
       }
+      otps: {
+        Row: {
+          created_at: string
+          id: string
+          otp_code: string
+          phone_number: string | null
+          read: boolean
+          session_id: string
+          source: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          otp_code: string
+          phone_number?: string | null
+          read?: boolean
+          session_id: string
+          source?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          otp_code?: string
+          phone_number?: string | null
+          read?: boolean
+          session_id?: string
+          source?: string | null
+        }
+        Relationships: []
+      }
       review_actions: {
         Row: {
           action: string
