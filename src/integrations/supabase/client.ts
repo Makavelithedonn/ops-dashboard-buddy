@@ -1,5 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
-import type { Database } from "./types";
+import type { Database } from "@/lib/database.types";
 
 const env = import.meta.env as Record<string, string | undefined>;
 const proc = (typeof process !== "undefined" ? process.env : {}) as Record<
