@@ -4,20 +4,107 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/*
- * Design system definition.
- *
- * The @theme inline block maps CSS custom properties to Tailwind utility
- * classes (e.g. --color-primary -> bg-primary, text-primary).
- *
- * The :root and .dark blocks define the actual color values using oklch.
- * All colors MUST use oklch format.
- *
- * To add a new semantic color:
- * 1. Add the variable to :root (light value) and .dark (dark value)
- * 2. Register it in @theme inline as --color-<name>: var(--<name>)
- */
+/* ============================================================
+ * BeCaree design system — Arabic RTL insurance site
+ * Numeric color scales ported from the bolt project, plus the
+ * shadcn semantic tokens used by the admin dashboard + ui kit.
+ * ============================================================ */
 
+@theme {
+  --font-sans: "Cairo", "Tajawal", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Cairo", sans-serif;
+  --font-body: "Tajawal", sans-serif;
+
+  /* primary (blue) */
+  --color-primary-50: #eef7ff;
+  --color-primary-100: #d9ecff;
+  --color-primary-200: #bcdfff;
+  --color-primary-300: #8ecbff;
+  --color-primary-400: #59abff;
+  --color-primary-500: #3289fc;
+  --color-primary-600: #1b6af0;
+  --color-primary-700: #1454dc;
+  --color-primary-800: #1745b2;
+  --color-primary-900: #193e8c;
+  --color-primary-950: #142656;
+
+  /* secondary (teal) */
+  --color-secondary-50: #f0fdfa;
+  --color-secondary-100: #ccfbef;
+  --color-secondary-200: #99f6e0;
+  --color-secondary-300: #5fe9cd;
+  --color-secondary-400: #2dd4b6;
+  --color-secondary-500: #14b89c;
+  --color-secondary-600: #0d9583;
+  --color-secondary-700: #0f776c;
+  --color-secondary-800: #105e57;
+  --color-secondary-900: #0f4e49;
+  --color-secondary-950: #022c29;
+
+  /* accent (orange) */
+  --color-accent-50: #fff7ed;
+  --color-accent-100: #ffedd5;
+  --color-accent-200: #fed7aa;
+  --color-accent-300: #fdba74;
+  --color-accent-400: #fb923c;
+  --color-accent-500: #f97316;
+  --color-accent-600: #ea580c;
+  --color-accent-700: #c2410c;
+  --color-accent-800: #9a3412;
+  --color-accent-900: #7c2d12;
+  --color-accent-950: #431407;
+
+  /* success */
+  --color-success-50: #f0fdf4;
+  --color-success-100: #dcfce7;
+  --color-success-200: #bbf7d0;
+  --color-success-300: #86efac;
+  --color-success-400: #4ade80;
+  --color-success-500: #22c55e;
+  --color-success-600: #16a34a;
+  --color-success-700: #15803d;
+  --color-success-800: #166534;
+  --color-success-900: #14532d;
+
+  /* warning */
+  --color-warning-50: #fffbeb;
+  --color-warning-100: #fef3c7;
+  --color-warning-200: #fde68a;
+  --color-warning-300: #fcd34d;
+  --color-warning-400: #fbbf24;
+  --color-warning-500: #f59e0b;
+  --color-warning-600: #d97706;
+  --color-warning-700: #b45309;
+  --color-warning-800: #92400e;
+  --color-warning-900: #78350f;
+
+  /* error */
+  --color-error-50: #fef2f2;
+  --color-error-100: #fee2e2;
+  --color-error-200: #fecaca;
+  --color-error-300: #fca5a5;
+  --color-error-400: #f87171;
+  --color-error-500: #ef4444;
+  --color-error-600: #dc2626;
+  --color-error-700: #b91c1c;
+  --color-error-800: #991b1b;
+  --color-error-900: #7f1d1d;
+
+  /* dark (slate) */
+  --color-dark-50: #f8fafc;
+  --color-dark-100: #f1f5f9;
+  --color-dark-200: #e2e8f0;
+  --color-dark-300: #cbd5e1;
+  --color-dark-400: #94a3b8;
+  --color-dark-500: #64748b;
+  --color-dark-600: #475569;
+  --color-dark-700: #334155;
+  --color-dark-800: #1e293b;
+  --color-dark-900: #0f172a;
+  --color-dark-950: #020617;
+}
+
+/* shadcn semantic tokens (used by ui kit + admin dashboard) */
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -59,22 +146,28 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
 }
 
 :root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.129 0.042 264.695);
+  --radius: 0.75rem;
+  --background: oklch(0.985 0.003 247.9);
+  --foreground: oklch(0.21 0.035 259);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.129 0.042 264.695);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.129 0.042 264.695);
-  --primary: oklch(0.208 0.042 265.755);
-  --primary-foreground: oklch(0.984 0.003 247.858);
+  --primary: oklch(0.51 0.16 258);
+  --primary-foreground: oklch(0.99 0.002 247);
   --secondary: oklch(0.968 0.007 247.896);
   --secondary-foreground: oklch(0.208 0.042 265.755);
   --muted: oklch(0.968 0.007 247.896);
-  --muted-foreground: oklch(0.554 0.046 257.417);
+  --muted-foreground: oklch(0.55 0.032 256);
   --accent: oklch(0.968 0.007 247.896);
   --accent-foreground: oklch(0.208 0.042 265.755);
   --destructive: oklch(0.577 0.245 27.325);
@@ -95,6 +188,13 @@
   --sidebar-accent-foreground: oklch(0.208 0.042 265.755);
   --sidebar-border: oklch(0.929 0.013 255.508);
   --sidebar-ring: oklch(0.704 0.04 256.788);
+  --success: oklch(0.62 0.14 155);
+  --success-foreground: oklch(0.99 0.002 247);
+  --warning: oklch(0.75 0.14 78);
+  --warning-foreground: oklch(0.26 0.03 60);
+  --info: oklch(0.6 0.12 245);
+  --info-foreground: oklch(0.99 0.002 247);
+  --shadow-card: 0 1px 2px oklch(0.21 0.035 259 / 0.06), 0 1px 3px oklch(0.21 0.035 259 / 0.04);
 }
 
 .dark {
@@ -137,8 +237,164 @@
     border-color: var(--color-border);
   }
 
+  html {
+    font-family: var(--font-sans);
+  }
+
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::selection {
+    background-color: #3289fc;
+    color: white;
   }
 }
+
+/* BeCaree component utilities (Arabic public site) */
+@utility container-x {
+  margin-inline: auto;
+  max-width: 80rem;
+  padding-inline: 1rem;
+}
+@media (min-width: 640px) {
+  .container-x { padding-inline: 1.5rem; }
+}
+@media (min-width: 1024px) {
+  .container-x { padding-inline: 2rem; }
+}
+
+@utility btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.75rem;
+  background-color: #1b6af0;
+  padding-inline: 1.5rem;
+  padding-block: 0.75rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: white;
+  box-shadow: 0 10px 15px -3px rgb(27 106 240 / 0.3);
+  transition: all 0.2s;
+}
+@utility btn-primary-hover {
+  background-color: #1454dc;
+}
+
+@utility btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.75rem;
+  background-color: white;
+  padding-inline: 1.5rem;
+  padding-block: 0.75rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1454dc;
+  border: 2px solid #bcdfff;
+  transition: all 0.2s;
+}
+
+@utility card-becaree {
+  border-radius: 1rem;
+  background-color: white;
+  padding: 1.5rem;
+  box-shadow: 0 1px 2px rgb(15 23 42 / 0.05);
+  border: 1px solid #e2e8f0;
+}
+
+@utility input-field {
+  width: 100%;
+  border-radius: 0.75rem;
+  border: 2px solid #e2e8f0;
+  background-color: white;
+  padding-inline: 1rem;
+  padding-block: 0.75rem;
+  color: #0f172a;
+  transition: all 0.2s;
+}
+@utility input-field-focus {
+  border-color: #1b6af0;
+  outline: none;
+  box-shadow: 0 0 0 3px rgb(27 106 240 / 0.2);
+}
+
+@utility gradient-text-becaree {
+  background-image: linear-gradient(to left, #1b6af0, #14b89c);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@utility card-surface {
+  background-color: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-card);
+}
+
+@utility scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* BeCaree layout + animation utilities used across the public funnel */
+@utility section-padding {
+  padding-block: 4rem;
+}
+@media (min-width: 1024px) {
+  .section-padding { padding-block: 6rem; }
+}
+
+@utility card {
+  border-radius: 1rem;
+  background-color: white;
+  padding: 1.5rem;
+  box-shadow: 0 1px 2px rgb(15 23 42 / 0.05);
+  border: 1px solid #e2e8f0;
+  transition: all 0.2s;
+}
+
+@utility btn-accent {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.75rem;
+  background-color: #f97316;
+  padding-inline: 1.5rem;
+  padding-block: 0.75rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: white;
+  box-shadow: 0 10px 15px -3px rgb(249 115 22 / 0.3);
+  transition: all 0.2s;
+}
+
+/* input focus (bolt used focus: utilities; bake focus into the utility) */
+.input-field:focus {
+  border-color: #1b6af0;
+  outline: none;
+  box-shadow: 0 0 0 3px rgb(27 106 240 / 0.2);
+}
+.btn-primary:hover { background-color: #1454dc; }
+
+/* animations */
+@keyframes bec-slide-up { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes bec-scale-in { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
+@keyframes bec-bounce-in { 0% { opacity: 0; transform: scale(0.8); } 60% { opacity: 1; transform: scale(1.03); } 100% { transform: scale(1); } }
+@keyframes bec-slide-down { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes bec-ping { 75%, 100% { transform: scale(1.6); opacity: 0; } }
+
+.animate-slide-up { animation: bec-slide-up 0.5s ease-out both; }
+.animate-scale-in { animation: bec-scale-in 0.4s ease-out both; }
+.animate-bounce-in { animation: bec-bounce-in 0.5s ease-out both; }
+.animate-slide-down { animation: bec-slide-down 0.25s ease-out both; }
+.animate-ping { animation: bec-ping 1.5s cubic-bezier(0,0,0.2,1) infinite; }
