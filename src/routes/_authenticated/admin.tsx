@@ -12,9 +12,9 @@ import {
   Activity,
   Ban,
   Bell,
-  
   CheckCircle2,
   ChevronRight,
+  Key,
   LogOut,
   Plug,
   RefreshCw,

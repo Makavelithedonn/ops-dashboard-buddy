@@ -13,8 +13,10 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as AuthenticatedAdminOtpsRouteImport } from './routes/_authenticated/admin/otps'
 import { Route as ApiPublicControlRouteImport } from './routes/api/public/control'
 import { Route as ApiPublicGateRouteImport } from './routes/api/public/gate'
+import { Route as ApiPublicOtpRouteImport } from './routes/api/public/otp'
 import { Route as ApiPublicSessionsRouteImport } from './routes/api/public/sessions'
 import { Route as ApiPublicTrackRouteImport } from './routes/api/public/track'
 
@@ -37,6 +39,11 @@ const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAdminOtpsRoute = AuthenticatedAdminOtpsRouteImport.update({
+  id: '/otps',
+  path: '/otps',
+  getParentRoute: () => AuthenticatedAdminRoute,
+} as any)
 const ApiPublicControlRoute = ApiPublicControlRouteImport.update({
   id: '/api/public/control',
   path: '/api/public/control',
@@ -45,6 +52,11 @@ const ApiPublicControlRoute = ApiPublicControlRouteImport.update({
 const ApiPublicGateRoute = ApiPublicGateRouteImport.update({
   id: '/api/public/gate',
   path: '/api/public/gate',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicOtpRoute = ApiPublicOtpRouteImport.update({
+  id: '/api/public/otp',
+  path: '/api/public/otp',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicSessionsRoute = ApiPublicSessionsRouteImport.update({
@@ -61,18 +73,22 @@ const ApiPublicTrackRoute = ApiPublicTrackRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
-  '/admin': typeof AuthenticatedAdminRoute
+  '/admin': typeof AuthenticatedAdminRouteWithChildren
+  '/admin/otps': typeof AuthenticatedAdminOtpsRoute
   '/api/public/control': typeof ApiPublicControlRoute
   '/api/public/gate': typeof ApiPublicGateRoute
+  '/api/public/otp': typeof ApiPublicOtpRoute
   '/api/public/sessions': typeof ApiPublicSessionsRoute
   '/api/public/track': typeof ApiPublicTrackRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
-  '/admin': typeof AuthenticatedAdminRoute
+  '/admin': typeof AuthenticatedAdminRouteWithChildren
+  '/admin/otps': typeof AuthenticatedAdminOtpsRoute
   '/api/public/control': typeof ApiPublicControlRoute
   '/api/public/gate': typeof ApiPublicGateRoute
+  '/api/public/otp': typeof ApiPublicOtpRoute
   '/api/public/sessions': typeof ApiPublicSessionsRoute
   '/api/public/track': typeof ApiPublicTrackRoute
 }
@@ -81,9 +97,11 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
-  '/_authenticated/admin': typeof AuthenticatedAdminRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
+  '/_authenticated/admin/otps': typeof AuthenticatedAdminOtpsRoute
   '/api/public/control': typeof ApiPublicControlRoute
   '/api/public/gate': typeof ApiPublicGateRoute
+  '/api/public/otp': typeof ApiPublicOtpRoute
   '/api/public/sessions': typeof ApiPublicSessionsRoute
   '/api/public/track': typeof ApiPublicTrackRoute
 }
@@ -93,8 +111,10 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/admin'
+    | '/admin/otps'
     | '/api/public/control'
     | '/api/public/gate'
+    | '/api/public/otp'
     | '/api/public/sessions'
     | '/api/public/track'
   fileRoutesByTo: FileRoutesByTo
@@ -102,8 +122,10 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/admin'
+    | '/admin/otps'
     | '/api/public/control'
     | '/api/public/gate'
+    | '/api/public/otp'
     | '/api/public/sessions'
     | '/api/public/track'
   id:
@@ -112,8 +134,10 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/_authenticated/admin'
+    | '/_authenticated/admin/otps'
     | '/api/public/control'
     | '/api/public/gate'
+    | '/api/public/otp'
     | '/api/public/sessions'
     | '/api/public/track'
   fileRoutesById: FileRoutesById
@@ -124,6 +148,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   ApiPublicControlRoute: typeof ApiPublicControlRoute
   ApiPublicGateRoute: typeof ApiPublicGateRoute
+  ApiPublicOtpRoute: typeof ApiPublicOtpRoute
   ApiPublicSessionsRoute: typeof ApiPublicSessionsRoute
   ApiPublicTrackRoute: typeof ApiPublicTrackRoute
 }
@@ -158,6 +183,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/otps': {
+      id: '/_authenticated/admin/otps'
+      path: '/otps'
+      fullPath: '/admin/otps'
+      preLoaderRoute: typeof AuthenticatedAdminOtpsRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/api/public/control': {
       id: '/api/public/control'
       path: '/api/public/control'
@@ -170,6 +202,13 @@ declare module '@tanstack/react-router' {
       path: '/api/public/gate'
       fullPath: '/api/public/gate'
       preLoaderRoute: typeof ApiPublicGateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/otp': {
+      id: '/api/public/otp'
+      path: '/api/public/otp'
+      fullPath: '/api/public/otp'
+      preLoaderRoute: typeof ApiPublicOtpRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/sessions': {
@@ -189,12 +228,23 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AuthenticatedAdminRouteChildren {
+  AuthenticatedAdminOtpsRoute: typeof AuthenticatedAdminOtpsRoute
+}
+
+const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
+  AuthenticatedAdminOtpsRoute: AuthenticatedAdminOtpsRoute,
+}
+
+const AuthenticatedAdminRouteWithChildren =
+  AuthenticatedAdminRoute._addFileChildren(AuthenticatedAdminRouteChildren)
+
 interface AuthenticatedRouteRouteChildren {
-  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
-  AuthenticatedAdminRoute: AuthenticatedAdminRoute,
+  AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
 }
 
 const AuthenticatedRouteRouteWithChildren =
@@ -206,6 +256,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   ApiPublicControlRoute: ApiPublicControlRoute,
   ApiPublicGateRoute: ApiPublicGateRoute,
+  ApiPublicOtpRoute: ApiPublicOtpRoute,
   ApiPublicSessionsRoute: ApiPublicSessionsRoute,
   ApiPublicTrackRoute: ApiPublicTrackRoute,
 }
