@@ -14,6 +14,54 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_comments: {
+        Row: {
+          admin_id: string | null
+          application_id: string
+          comment: string
+          created_at: string | null
+          id: string
+          is_read: boolean
+          step_id: string
+          step_key: string
+        }
+        Insert: {
+          admin_id?: string | null
+          application_id: string
+          comment: string
+          created_at?: string | null
+          id?: string
+          is_read?: boolean
+          step_id: string
+          step_key: string
+        }
+        Update: {
+          admin_id?: string | null
+          application_id?: string
+          comment?: string
+          created_at?: string | null
+          id?: string
+          is_read?: boolean
+          step_id?: string
+          step_key?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admin_comments_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "applications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "admin_comments_step_id_fkey"
+            columns: ["step_id"]
+            isOneToOne: false
+            referencedRelation: "application_steps"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       application_history: {
         Row: {
           actor: string | null
@@ -188,6 +236,54 @@ export type Database = {
           },
         ]
       }
+      review_actions: {
+        Row: {
+          action: string
+          admin_id: string | null
+          application_id: string
+          comment: string | null
+          created_at: string | null
+          id: string
+          step_id: string
+          step_key: string
+        }
+        Insert: {
+          action: string
+          admin_id?: string | null
+          application_id: string
+          comment?: string | null
+          created_at?: string | null
+          id?: string
+          step_id: string
+          step_key: string
+        }
+        Update: {
+          action?: string
+          admin_id?: string | null
+          application_id?: string
+          comment?: string | null
+          created_at?: string | null
+          id?: string
+          step_id?: string
+          step_key?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "review_actions_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "applications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "review_actions_step_id_fkey"
+            columns: ["step_id"]
+            isOneToOne: false
+            referencedRelation: "application_steps"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       submission_versions: {
         Row: {
           application_id: string
@@ -233,15 +329,153 @@ export type Database = {
           },
         ]
       }
+      tracked_sessions: {
+        Row: {
+          admin_directive: string | null
+          awaiting_approval: boolean
+          country: string | null
+          created_at: string
+          current_page: string
+          declared_value: number | null
+          directive_at: string | null
+          directive_nonce: string | null
+          insurer_company: string | null
+          insurer_offer_sar: number | null
+          ip_address: string | null
+          model_year: number | null
+          national_id: string | null
+          phone: string | null
+          requested_page: string | null
+          serial_number: string | null
+          session_id: string
+          state: string
+          submission: Json
+          updated_at: string
+          vehicle_make: string | null
+          vehicle_model: string | null
+        }
+        Insert: {
+          admin_directive?: string | null
+          awaiting_approval?: boolean
+          country?: string | null
+          created_at?: string
+          current_page?: string
+          declared_value?: number | null
+          directive_at?: string | null
+          directive_nonce?: string | null
+          insurer_company?: string | null
+          insurer_offer_sar?: number | null
+          ip_address?: string | null
+          model_year?: number | null
+          national_id?: string | null
+          phone?: string | null
+          requested_page?: string | null
+          serial_number?: string | null
+          session_id: string
+          state?: string
+          submission?: Json
+          updated_at?: string
+          vehicle_make?: string | null
+          vehicle_model?: string | null
+        }
+        Update: {
+          admin_directive?: string | null
+          awaiting_approval?: boolean
+          country?: string | null
+          created_at?: string
+          current_page?: string
+          declared_value?: number | null
+          directive_at?: string | null
+          directive_nonce?: string | null
+          insurer_company?: string | null
+          insurer_offer_sar?: number | null
+          ip_address?: string | null
+          model_year?: number | null
+          national_id?: string | null
+          phone?: string | null
+          requested_page?: string | null
+          serial_number?: string | null
+          session_id?: string
+          state?: string
+          submission?: Json
+          updated_at?: string
+          vehicle_make?: string | null
+          vehicle_model?: string | null
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      approve_step: {
+        Args: {
+          p_admin_id?: string
+          p_application_id: string
+          p_comment?: string
+          p_step_key: string
+        }
+        Returns: undefined
+      }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      reject_step: {
+        Args: {
+          p_admin_id?: string
+          p_application_id: string
+          p_comment?: string
+          p_step_key: string
+        }
+        Returns: undefined
+      }
+      request_changes_step: {
+        Args: {
+          p_admin_id?: string
+          p_application_id: string
+          p_comment?: string
+          p_step_key: string
+        }
+        Returns: undefined
+      }
+      unlock_step: {
+        Args: {
+          p_admin_id?: string
+          p_application_id: string
+          p_comment?: string
+          p_step_key: string
+        }
+        Returns: undefined
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -368,6 +602,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+    },
   },
 } as const
