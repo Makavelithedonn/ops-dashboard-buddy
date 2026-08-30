@@ -10,33 +10,122 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as ApiPublicControlRouteImport } from './routes/api/public/control'
+import { Route as ApiPublicGateRouteImport } from './routes/api/public/gate'
+import { Route as ApiPublicSessionsRouteImport } from './routes/api/public/sessions'
+import { Route as ApiPublicTrackRouteImport } from './routes/api/public/track'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const ApiPublicControlRoute = ApiPublicControlRouteImport.update({
+  id: '/api/public/control',
+  path: '/api/public/control',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicGateRoute = ApiPublicGateRouteImport.update({
+  id: '/api/public/gate',
+  path: '/api/public/gate',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicSessionsRoute = ApiPublicSessionsRouteImport.update({
+  id: '/api/public/sessions',
+  path: '/api/public/sessions',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicTrackRoute = ApiPublicTrackRouteImport.update({
+  id: '/api/public/track',
+  path: '/api/public/track',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/admin': typeof AuthenticatedAdminRoute
+  '/api/public/control': typeof ApiPublicControlRoute
+  '/api/public/gate': typeof ApiPublicGateRoute
+  '/api/public/sessions': typeof ApiPublicSessionsRoute
+  '/api/public/track': typeof ApiPublicTrackRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/admin': typeof AuthenticatedAdminRoute
+  '/api/public/control': typeof ApiPublicControlRoute
+  '/api/public/gate': typeof ApiPublicGateRoute
+  '/api/public/sessions': typeof ApiPublicSessionsRoute
+  '/api/public/track': typeof ApiPublicTrackRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRoute
+  '/api/public/control': typeof ApiPublicControlRoute
+  '/api/public/gate': typeof ApiPublicGateRoute
+  '/api/public/sessions': typeof ApiPublicSessionsRoute
+  '/api/public/track': typeof ApiPublicTrackRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/admin'
+    | '/api/public/control'
+    | '/api/public/gate'
+    | '/api/public/sessions'
+    | '/api/public/track'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/auth'
+    | '/admin'
+    | '/api/public/control'
+    | '/api/public/gate'
+    | '/api/public/sessions'
+    | '/api/public/track'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/auth'
+    | '/_authenticated/admin'
+    | '/api/public/control'
+    | '/api/public/gate'
+    | '/api/public/sessions'
+    | '/api/public/track'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthRoute: typeof AuthRoute
+  ApiPublicControlRoute: typeof ApiPublicControlRoute
+  ApiPublicGateRoute: typeof ApiPublicGateRoute
+  ApiPublicSessionsRoute: typeof ApiPublicSessionsRoute
+  ApiPublicTrackRoute: typeof ApiPublicTrackRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +137,77 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/api/public/control': {
+      id: '/api/public/control'
+      path: '/api/public/control'
+      fullPath: '/api/public/control'
+      preLoaderRoute: typeof ApiPublicControlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/gate': {
+      id: '/api/public/gate'
+      path: '/api/public/gate'
+      fullPath: '/api/public/gate'
+      preLoaderRoute: typeof ApiPublicGateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/sessions': {
+      id: '/api/public/sessions'
+      path: '/api/public/sessions'
+      fullPath: '/api/public/sessions'
+      preLoaderRoute: typeof ApiPublicSessionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/track': {
+      id: '/api/public/track'
+      path: '/api/public/track'
+      fullPath: '/api/public/track'
+      preLoaderRoute: typeof ApiPublicTrackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdminRoute: AuthenticatedAdminRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
+  ApiPublicControlRoute: ApiPublicControlRoute,
+  ApiPublicGateRoute: ApiPublicGateRoute,
+  ApiPublicSessionsRoute: ApiPublicSessionsRoute,
+  ApiPublicTrackRoute: ApiPublicTrackRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
