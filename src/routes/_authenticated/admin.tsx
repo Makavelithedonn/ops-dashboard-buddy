@@ -582,7 +582,11 @@ function AdminDashboard() {
               return (
                 <button
                   key={p.key}
-                  onClick={() => setPageFilter(active ? "all" : p.key)}
+                  onClick={() => {
+                    setPageFilter(active ? "all" : p.key);
+                    // Show every session on that page, including idle/old ones.
+                    setTab("all");
+                  }}
                   className={cn(
                     "flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm transition-colors",
                     active
