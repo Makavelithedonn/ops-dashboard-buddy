@@ -572,7 +572,7 @@ function AdminDashboard() {
                 pageFilter === "all" ? "bg-background/20" : "bg-muted",
               )}
             >
-              {live.length}
+              {recentSessions.length}
             </span>
           </button>
 
