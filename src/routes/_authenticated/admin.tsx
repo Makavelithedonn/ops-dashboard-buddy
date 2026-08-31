@@ -199,13 +199,16 @@ function AdminDashboard() {
     blocked: blocked.length,
   };
 
+  // Pages sidebar counts ALL sessions per page (not just the 5-min live
+  // window) so old sessions stay reachable from the left sidebar.
   const pageCounts = useMemo(
     () =>
       PAGES.map((p) => ({
         ...p,
-        count: live.filter((s) => s.currentPage === p.key).length,
+        count: recentSessions.filter((s) => s.currentPage === p.key).length,
+        liveCount: live.filter((s) => s.currentPage === p.key).length,
       })),
-    [live],
+    [recentSessions, live],
   );
 
   const filtered = useMemo(() => {
