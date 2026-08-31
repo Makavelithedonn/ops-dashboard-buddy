@@ -550,13 +550,13 @@ function AdminDashboard() {
         {/* Left sidebar */}
         <aside className="rounded-2xl border border-border bg-card p-4 shadow-[var(--shadow-card)]">
           <p className="px-2 pb-3 text-sm font-semibold text-foreground">
-            Pages <span className="font-normal text-muted-foreground">· live traffic</span>
+            Pages <span className="font-normal text-muted-foreground">· all sessions</span>
           </p>
 
           <button
             onClick={() => {
               setPageFilter("all");
-              setTab("live");
+              setTab("all");
             }}
             className={cn(
               "mb-2 flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
