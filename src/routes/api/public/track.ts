@@ -54,14 +54,20 @@ function pageFromPath(path: string | undefined): z.infer<typeof PageEnum> {
   return "quote_landing";
 }
 
-const ALLOWED_ORIGIN = "https://tmnbcre.lovable.app";
+const ALLOWED_ORIGINS = [
+  "https://tmnbcre.lovable.app",
+  "https://tamnbcare.online",
+];
 
-const cors = {
-  "Access-Control-Allow-Origin": ALLOWED_ORIGIN,
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-  "Access-Control-Allow-Headers": "content-type",
-  Vary: "Origin",
-};
+function corsHeaders(origin: string | null) {
+  return {
+    "Access-Control-Allow-Origin":
+      origin && ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0],
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Headers": "content-type",
+    Vary: "Origin",
+  };
+}
 
 export const Route = createFileRoute("/api/public/track")({
   server: {
