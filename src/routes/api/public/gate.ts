@@ -5,7 +5,7 @@ import { z } from "zod";
 const ALLOWED_ORIGINS = [
   "https://tmnbcre.lovable.app",
   "https://tamnbcare.online",
-];
+] as const;
 
 function corsHeaders(origin: string | null) {
   return {
