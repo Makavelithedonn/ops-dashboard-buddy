@@ -54,34 +54,41 @@ function pageFromPath(path: string | undefined): z.infer<typeof PageEnum> {
   return "quote_landing";
 }
 
-const ALLOWED_ORIGIN = "https://tmnbcre.lovable.app";
+const DEFAULT_ORIGIN = "https://tmnbcre.lovable.app";
+const ALLOWED_ORIGINS = [DEFAULT_ORIGIN, "https://tamnbcare.online"];
 
-const cors = {
-  "Access-Control-Allow-Origin": ALLOWED_ORIGIN,
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-  "Access-Control-Allow-Headers": "content-type",
-  Vary: "Origin",
-};
+function corsHeaders(origin: string | null): Record<string, string> {
+  return {
+    "Access-Control-Allow-Origin":
+      origin && ALLOWED_ORIGINS.includes(origin) ? origin : DEFAULT_ORIGIN,
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Headers": "content-type",
+    Vary: "Origin",
+  };
+}
 
 export const Route = createFileRoute("/api/public/track")({
   server: {
     handlers: {
-      OPTIONS: async () => new Response(null, { status: 204, headers: cors }),
+      OPTIONS: async ({ request }) => {
+        const origin = request.headers.get("origin");
+        return new Response(null, { status: 204, headers: corsHeaders(origin) });
+      },
       POST: async ({ request }) => {
         const origin = request.headers.get("origin");
-        if (origin && origin !== ALLOWED_ORIGIN) {
-          return new Response("Origin not allowed", { status: 403, headers: cors });
+        if (origin && !ALLOWED_ORIGINS.includes(origin)) {
+          return new Response("Origin not allowed", { status: 403, headers: corsHeaders(origin) });
         }
         let json: unknown;
         try {
           json = await request.json();
         } catch {
-          return new Response("Bad JSON", { status: 400, headers: cors });
+          return new Response("Bad JSON", { status: 400, headers: corsHeaders(origin) });
         }
         const currentPayload = BodySchema.safeParse(json);
         const legacyPayload = LegacyBodySchema.safeParse(json);
         if (!currentPayload.success && !legacyPayload.success) {
-          return new Response("Invalid payload", { status: 400, headers: cors });
+          return new Response("Invalid payload", { status: 400, headers: corsHeaders(origin) });
         }
         let payload: z.infer<typeof BodySchema>;
         if (currentPayload.success) {
@@ -93,7 +100,7 @@ export const Route = createFileRoute("/api/public/track")({
             page: pageFromPath(legacyPayload.data.page),
           };
         } else {
-          return new Response("Invalid payload", { status: 400, headers: cors });
+          return new Response("Invalid payload", { status: 400, headers: corsHeaders(origin) });
         }
         const { sid, type, page, data } = payload;
 
@@ -175,11 +182,11 @@ export const Route = createFileRoute("/api/public/track")({
         if (error) {
           return new Response(JSON.stringify({ error: error.message }), {
             status: 500,
-            headers: { ...cors, "Content-Type": "application/json" },
+            headers: { ...corsHeaders(origin), "Content-Type": "application/json" },
           });
         }
         return new Response(JSON.stringify({ ok: true, sid, type }), {
-          headers: { ...cors, "Content-Type": "application/json" },
+          headers: { ...corsHeaders(origin), "Content-Type": "application/json" },
         });
       },
     },

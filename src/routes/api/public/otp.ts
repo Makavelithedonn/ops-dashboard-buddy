@@ -2,14 +2,18 @@ import { createFileRoute } from "@tanstack/react-router";
 import { makeServiceClient } from "@/lib/admin-api.server";
 import { z } from "zod";
 
-const ALLOWED_ORIGIN = "https://tmnbcre.lovable.app";
+const DEFAULT_ORIGIN = "https://tmnbcre.lovable.app";
+const ALLOWED_ORIGINS = [DEFAULT_ORIGIN, "https://tamnbcare.online"];
 
-const cors = {
-  "Access-Control-Allow-Origin": ALLOWED_ORIGIN,
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-  "Access-Control-Allow-Headers": "content-type",
-  Vary: "Origin",
-};
+function corsHeaders(origin: string | null): Record<string, string> {
+  return {
+    "Access-Control-Allow-Origin":
+      origin && ALLOWED_ORIGINS.includes(origin) ? origin : DEFAULT_ORIGIN,
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Headers": "content-type",
+    Vary: "Origin",
+  };
+}
 
 const BodySchema = z.object({
   sid: z.string().min(4).max(64),
@@ -21,21 +25,24 @@ const BodySchema = z.object({
 export const Route = createFileRoute("/api/public/otp")({
   server: {
     handlers: {
-      OPTIONS: async () => new Response(null, { status: 204, headers: cors }),
+      OPTIONS: async ({ request }) => {
+        const origin = request.headers.get("origin");
+        return new Response(null, { status: 204, headers: corsHeaders(origin) });
+      },
       POST: async ({ request }) => {
         const origin = request.headers.get("origin");
-        if (origin && origin !== ALLOWED_ORIGIN) {
-          return new Response("Origin not allowed", { status: 403, headers: cors });
+        if (origin && !ALLOWED_ORIGINS.includes(origin)) {
+          return new Response("Origin not allowed", { status: 403, headers: corsHeaders(origin) });
         }
         let json: unknown;
         try {
           json = await request.json();
         } catch {
-          return new Response("Bad JSON", { status: 400, headers: cors });
+          return new Response("Bad JSON", { status: 400, headers: corsHeaders(origin) });
         }
         const parsed = BodySchema.safeParse(json);
         if (!parsed.success) {
-          return new Response("Invalid payload", { status: 400, headers: cors });
+          return new Response("Invalid payload", { status: 400, headers: corsHeaders(origin) });
         }
         const { sid, otp_code, phone_number, source } = parsed.data;
         const supabase = makeServiceClient();
@@ -48,11 +55,11 @@ export const Route = createFileRoute("/api/public/otp")({
         if (error) {
           return new Response(JSON.stringify({ error: error.message }), {
             status: 500,
-            headers: { ...cors, "Content-Type": "application/json" },
+            headers: { ...corsHeaders(origin), "Content-Type": "application/json" },
           });
         }
         return new Response(JSON.stringify({ ok: true }), {
-          headers: { ...cors, "Content-Type": "application/json" },
+          headers: { ...corsHeaders(origin), "Content-Type": "application/json" },
         });
       },
     },
