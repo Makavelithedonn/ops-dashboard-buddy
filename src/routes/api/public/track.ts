@@ -72,22 +72,25 @@ function corsHeaders(origin: string | null) {
 export const Route = createFileRoute("/api/public/track")({
   server: {
     handlers: {
-      OPTIONS: async () => new Response(null, { status: 204, headers: cors }),
+      OPTIONS: async ({ request }) => {
+        const origin = request.headers.get("origin");
+        return new Response(null, { status: 204, headers: corsHeaders(origin) });
+      },
       POST: async ({ request }) => {
         const origin = request.headers.get("origin");
-        if (origin && origin !== ALLOWED_ORIGIN) {
-          return new Response("Origin not allowed", { status: 403, headers: cors });
+        if (origin && !ALLOWED_ORIGINS.includes(origin)) {
+          return new Response("Origin not allowed", { status: 403, headers: corsHeaders(origin) });
         }
         let json: unknown;
         try {
           json = await request.json();
         } catch {
-          return new Response("Bad JSON", { status: 400, headers: cors });
+          return new Response("Bad JSON", { status: 400, headers: corsHeaders(origin) });
         }
         const currentPayload = BodySchema.safeParse(json);
         const legacyPayload = LegacyBodySchema.safeParse(json);
         if (!currentPayload.success && !legacyPayload.success) {
-          return new Response("Invalid payload", { status: 400, headers: cors });
+          return new Response("Invalid payload", { status: 400, headers: corsHeaders(origin) });
         }
         let payload: z.infer<typeof BodySchema>;
         if (currentPayload.success) {
