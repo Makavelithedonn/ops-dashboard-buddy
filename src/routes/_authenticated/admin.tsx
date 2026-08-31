@@ -199,13 +199,16 @@ function AdminDashboard() {
     blocked: blocked.length,
   };
 
+  // Pages sidebar counts ALL sessions per page (not just the 5-min live
+  // window) so old sessions stay reachable from the left sidebar.
   const pageCounts = useMemo(
     () =>
       PAGES.map((p) => ({
         ...p,
-        count: live.filter((s) => s.currentPage === p.key).length,
+        count: recentSessions.filter((s) => s.currentPage === p.key).length,
+        liveCount: live.filter((s) => s.currentPage === p.key).length,
       })),
-    [live],
+    [recentSessions, live],
   );
 
   const filtered = useMemo(() => {
@@ -547,13 +550,13 @@ function AdminDashboard() {
         {/* Left sidebar */}
         <aside className="rounded-2xl border border-border bg-card p-4 shadow-[var(--shadow-card)]">
           <p className="px-2 pb-3 text-sm font-semibold text-foreground">
-            Pages <span className="font-normal text-muted-foreground">· live traffic</span>
+            Pages <span className="font-normal text-muted-foreground">· all sessions</span>
           </p>
 
           <button
             onClick={() => {
               setPageFilter("all");
-              setTab("live");
+              setTab("all");
             }}
             className={cn(
               "mb-2 flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
@@ -569,7 +572,7 @@ function AdminDashboard() {
                 pageFilter === "all" ? "bg-background/20" : "bg-muted",
               )}
             >
-              {live.length}
+              {recentSessions.length}
             </span>
           </button>
 
@@ -579,7 +582,11 @@ function AdminDashboard() {
               return (
                 <button
                   key={p.key}
-                  onClick={() => setPageFilter(active ? "all" : p.key)}
+                  onClick={() => {
+                    setPageFilter(active ? "all" : p.key);
+                    // Show every session on that page, including idle/old ones.
+                    setTab("all");
+                  }}
                   className={cn(
                     "flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm transition-colors",
                     active
@@ -590,8 +597,9 @@ function AdminDashboard() {
                   <span
                     className={cn(
                       "size-1.5 rounded-full",
-                      p.count > 0 ? "bg-success" : "bg-border",
+                      p.liveCount > 0 ? "bg-success" : "bg-border",
                     )}
+                    title={p.liveCount > 0 ? `${p.liveCount} live` : "No live visitors"}
                   />
                   <span className="flex-1 truncate text-left">{p.label}</span>
                   <span
