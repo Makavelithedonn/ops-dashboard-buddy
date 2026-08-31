@@ -597,8 +597,9 @@ function AdminDashboard() {
                   <span
                     className={cn(
                       "size-1.5 rounded-full",
-                      p.count > 0 ? "bg-success" : "bg-border",
+                      p.liveCount > 0 ? "bg-success" : "bg-border",
                     )}
+                    title={p.liveCount > 0 ? `${p.liveCount} live` : "No live visitors"}
                   />
                   <span className="flex-1 truncate text-left">{p.label}</span>
                   <span
