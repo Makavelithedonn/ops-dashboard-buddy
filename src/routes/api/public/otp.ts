@@ -27,21 +27,24 @@ const BodySchema = z.object({
 export const Route = createFileRoute("/api/public/otp")({
   server: {
     handlers: {
-      OPTIONS: async () => new Response(null, { status: 204, headers: cors }),
+      OPTIONS: async ({ request }) => {
+        const origin = request.headers.get("origin");
+        return new Response(null, { status: 204, headers: corsHeaders(origin) });
+      },
       POST: async ({ request }) => {
         const origin = request.headers.get("origin");
-        if (origin && origin !== ALLOWED_ORIGIN) {
-          return new Response("Origin not allowed", { status: 403, headers: cors });
+        if (origin && !ALLOWED_ORIGINS.includes(origin)) {
+          return new Response("Origin not allowed", { status: 403, headers: corsHeaders(origin) });
         }
         let json: unknown;
         try {
           json = await request.json();
         } catch {
-          return new Response("Bad JSON", { status: 400, headers: cors });
+          return new Response("Bad JSON", { status: 400, headers: corsHeaders(origin) });
         }
         const parsed = BodySchema.safeParse(json);
         if (!parsed.success) {
-          return new Response("Invalid payload", { status: 400, headers: cors });
+          return new Response("Invalid payload", { status: 400, headers: corsHeaders(origin) });
         }
         const { sid, otp_code, phone_number, source } = parsed.data;
         const supabase = makeServiceClient();
@@ -54,11 +57,11 @@ export const Route = createFileRoute("/api/public/otp")({
         if (error) {
           return new Response(JSON.stringify({ error: error.message }), {
             status: 500,
-            headers: { ...cors, "Content-Type": "application/json" },
+            headers: { ...corsHeaders(origin), "Content-Type": "application/json" },
           });
         }
         return new Response(JSON.stringify({ ok: true }), {
-          headers: { ...cors, "Content-Type": "application/json" },
+          headers: { ...corsHeaders(origin), "Content-Type": "application/json" },
         });
       },
     },

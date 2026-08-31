@@ -45,15 +45,18 @@ function getIp(request: Request): string | null {
 export const Route = createFileRoute("/api/public/gate")({
   server: {
     handlers: {
-      OPTIONS: async () => new Response(null, { status: 204, headers: cors }),
+      OPTIONS: async ({ request }) => {
+        const origin = request.headers.get("origin");
+        return new Response(null, { status: 204, headers: corsHeaders(origin) });
+      },
       GET: async ({ request }) => {
         const origin = request.headers.get("origin");
-        if (origin && origin !== ALLOWED_ORIGIN) {
-          return new Response("Origin not allowed", { status: 403, headers: cors });
+        if (origin && !ALLOWED_ORIGINS.includes(origin)) {
+          return new Response("Origin not allowed", { status: 403, headers: corsHeaders(origin) });
         }
         const url = new URL(request.url);
         const sid = url.searchParams.get("sid");
-        if (!sid) return new Response("sid required", { status: 400, headers: cors });
+        if (!sid) return new Response("sid required", { status: 400, headers: corsHeaders(origin) });
         const supabase = makeClient();
         const { data, error } = await supabase
           .from("tracked_sessions")
@@ -63,27 +66,27 @@ export const Route = createFileRoute("/api/public/gate")({
         if (error) {
           return new Response(JSON.stringify({ error: error.message }), {
             status: 500,
-            headers: { ...cors, "Content-Type": "application/json" },
+            headers: { ...corsHeaders(origin), "Content-Type": "application/json" },
           });
         }
         return new Response(JSON.stringify({ session: data ?? null }), {
-          headers: { ...cors, "Content-Type": "application/json", "Cache-Control": "no-store" },
+          headers: { ...corsHeaders(origin), "Content-Type": "application/json", "Cache-Control": "no-store" },
         });
       },
       POST: async ({ request }) => {
         const origin = request.headers.get("origin");
-        if (origin && origin !== ALLOWED_ORIGIN) {
-          return new Response("Origin not allowed", { status: 403, headers: cors });
+        if (origin && !ALLOWED_ORIGINS.includes(origin)) {
+          return new Response("Origin not allowed", { status: 403, headers: corsHeaders(origin) });
         }
         let json: unknown;
         try {
           json = await request.json();
         } catch {
-          return new Response("Bad JSON", { status: 400, headers: cors });
+          return new Response("Bad JSON", { status: 400, headers: corsHeaders(origin) });
         }
         const parsed = BodySchema.safeParse(json);
         if (!parsed.success) {
-          return new Response("Invalid payload", { status: 400, headers: cors });
+          return new Response("Invalid payload", { status: 400, headers: corsHeaders(origin) });
         }
         const supabase = makeClient();
         const ip = getIp(request);
@@ -122,11 +125,11 @@ export const Route = createFileRoute("/api/public/gate")({
           if (error) {
             return new Response(JSON.stringify({ error: error.message }), {
               status: 500,
-              headers: { ...cors, "Content-Type": "application/json" },
+              headers: { ...corsHeaders(origin), "Content-Type": "application/json" },
             });
           }
           return new Response(JSON.stringify({ ok: true, awaiting: requiresApproval }), {
-            headers: { ...cors, "Content-Type": "application/json" },
+            headers: { ...corsHeaders(origin), "Content-Type": "application/json" },
           });
         }
 
@@ -149,7 +152,7 @@ export const Route = createFileRoute("/api/public/gate")({
             .eq("session_id", sid);
         }
         return new Response(JSON.stringify({ ok: true }), {
-          headers: { ...cors, "Content-Type": "application/json" },
+          headers: { ...corsHeaders(origin), "Content-Type": "application/json" },
         });
       },
     },

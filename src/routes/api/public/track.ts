@@ -102,7 +102,7 @@ export const Route = createFileRoute("/api/public/track")({
             page: pageFromPath(legacyPayload.data.page),
           };
         } else {
-          return new Response("Invalid payload", { status: 400, headers: cors });
+          return new Response("Invalid payload", { status: 400, headers: corsHeaders(origin) });
         }
         const { sid, type, page, data } = payload;
 
@@ -184,11 +184,11 @@ export const Route = createFileRoute("/api/public/track")({
         if (error) {
           return new Response(JSON.stringify({ error: error.message }), {
             status: 500,
-            headers: { ...cors, "Content-Type": "application/json" },
+            headers: { ...corsHeaders(origin), "Content-Type": "application/json" },
           });
         }
         return new Response(JSON.stringify({ ok: true, sid, type }), {
-          headers: { ...cors, "Content-Type": "application/json" },
+          headers: { ...corsHeaders(origin), "Content-Type": "application/json" },
         });
       },
     },
