@@ -2,15 +2,13 @@ import { createFileRoute } from "@tanstack/react-router";
 import { makeServiceClient } from "@/lib/admin-api.server";
 import { z } from "zod";
 
-const ALLOWED_ORIGINS = [
-  "https://tmnbcre.lovable.app",
-  "https://tamnbcare.online",
-] as const;
+const DEFAULT_ORIGIN = "https://tmnbcre.lovable.app";
+const ALLOWED_ORIGINS = [DEFAULT_ORIGIN, "https://tamnbcare.online"];
 
-function corsHeaders(origin: string | null) {
+function corsHeaders(origin: string | null): Record<string, string> {
   return {
     "Access-Control-Allow-Origin":
-      origin && ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0],
+      origin && ALLOWED_ORIGINS.includes(origin) ? origin : DEFAULT_ORIGIN,
     "Access-Control-Allow-Methods": "POST, OPTIONS",
     "Access-Control-Allow-Headers": "content-type",
     Vary: "Origin",
