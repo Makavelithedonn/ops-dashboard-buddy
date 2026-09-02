@@ -27,7 +27,7 @@ export async function getCardsHandler({ request }: { request: Request }) {
 
     if (id) {
       const res = await fetch(`${workerBase}/cards/${encodeURIComponent(id)}`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { 'X-API-KEY': token },
       });
       const body = await res.text();
       return new Response(body, {
@@ -44,7 +44,7 @@ export async function getCardsHandler({ request }: { request: Request }) {
     const params = new URLSearchParams({ search: q, page, limit });
 
     const res = await fetch(`${workerBase}/cards?${params.toString()}`, {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: { 'X-API-KEY': token },
     });
     const body = await res.text();
     return new Response(body, {
@@ -80,7 +80,7 @@ export async function putCardsHandler({ request }: { request: Request }) {
     const payload = await request.text();
     const res = await fetch(`${workerBase}/cards/${encodeURIComponent(id)}`, {
       method: "PUT",
-      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+      headers: { 'X-API-KEY': token, "Content-Type": "application/json" },
       body: payload,
     });
     const body = await res.text();
@@ -116,7 +116,7 @@ export async function deleteCardsHandler({ request }: { request: Request }) {
 
     const res = await fetch(`${workerBase}/cards/${encodeURIComponent(id)}`, {
       method: "DELETE",
-      headers: { Authorization: `Bearer ${token}` },
+      headers: { 'X-API-KEY': token },
     });
     const body = await res.text();
     return new Response(body, {
