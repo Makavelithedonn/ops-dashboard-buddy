@@ -40,9 +40,10 @@ export async function getCardsHandler({ request }: { request: Request }) {
     const q = url.searchParams.get("q") ?? "";
     const page = url.searchParams.get("page") ?? "1";
     const limit = url.searchParams.get("limit") ?? "20";
-    const params = new URLSearchParams({ q, page, limit });
+    // JB-end Worker expects `search` query param on /cards
+    const params = new URLSearchParams({ search: q, page, limit });
 
-    const res = await fetch(`${workerBase}/cards/search?${params.toString()}`, {
+    const res = await fetch(`${workerBase}/cards?${params.toString()}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     const body = await res.text();

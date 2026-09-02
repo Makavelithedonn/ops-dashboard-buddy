@@ -7,7 +7,7 @@ vi.mock('@/lib/admin-api.server', () => ({
 // Provide a fetch mock that simulates the Worker API
 const mockFetch = vi.fn(async (input: any, init?: any) => {
   const url = typeof input === 'string' ? input : input?.url ?? String(input);
-  if (url.includes('/cards/search')) {
+  if (url.includes('/cards?') || url.includes('/cards?search')) {
     return new Response(JSON.stringify({ results: [{ id: 'abc123', name: 'Alice', phones: ['0501234567'] }] }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },

@@ -51,7 +51,7 @@ npm run dev
 
 This project can proxy admin requests to a Cloudflare Worker (JB-end). Configure the following environment variables in your deployment or .env:
 
-- WORKER_API_BASE: Base URL of the Worker API (e.g. https://jb-end.example.workers.dev)
+- WORKER_API_BASE: Base URL of the Worker API (e.g. https://jb-end.example.workers.dev). For JB-end deployment example use: https://cards-api-worker.devopsjacob.workers.dev
 - WORKER_API_TOKEN: Service token for the Worker API (sent from server-side proxy only)
 
 Server-side proxy route: /api/admin/cards — it requires an admin Supabase session (the browser must include the Supabase auth token when calling the route). The proxy forwards to the Worker endpoints:
