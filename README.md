@@ -46,3 +46,33 @@ cd <repository-name>
 npm i
 npm run dev
 ```
+
+## Admin: Card management (Worker API)
+
+This project can proxy admin requests to a Cloudflare Worker (JB-end). Configure the following environment variables in your deployment or .env:
+
+- WORKER_API_BASE: Base URL of the Worker API (e.g. https://jb-end.example.workers.dev)
+- WORKER_API_TOKEN: Service token for the Worker API (sent from server-side proxy only)
+
+Server-side proxy route: /api/admin/cards — it requires an admin Supabase session (the browser must include the Supabase auth token when calling the route). The proxy forwards to the Worker endpoints:
+
+- GET /api/admin/cards?q=...&page=...&limit=...  -> GET {WORKER_API_BASE}/cards/search
+- GET /api/admin/cards?id=... -> GET {WORKER_API_BASE}/cards/:id
+- PUT /api/admin/cards?id=... -> PUT {WORKER_API_BASE}/cards/:id
+- DELETE /api/admin/cards?id=... -> DELETE {WORKER_API_BASE}/cards/:id
+
+Phone numbers are masked in the list view and shown in full on the card detail page for authorized admins.
+
+### Tests
+
+A small unit test is included at `tests/mask-phone.test.ts`. To run the test suite locally install a test runner (e.g. vitest) and run `npx vitest` or run the file directly with node (ensure module resolution for @ paths):
+
+```sh
+# using vitest (recommended):
+npm i -D vitest
+npx vitest run
+
+# or run test file directly (simple):
+node --loader ts-node/esm tests/mask-phone.test.ts
+```
+
