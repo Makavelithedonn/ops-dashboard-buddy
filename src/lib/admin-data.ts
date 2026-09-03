@@ -83,7 +83,14 @@ export function maskNationalId(v: string) {
 }
 
 export function maskPhone(v: string) {
-  return v ?? "";
+  if (!v) return "";
+  const len = v.length;
+  if (len <= 3) return "*".repeat(len);
+  const prefixLen = v.startsWith("+") ? Math.min(6, len - 2) : 2;
+  if (prefixLen + 2 >= len) return "*".repeat(len);
+  const middleLen = Math.max(1, Math.min(5, len - prefixLen - 2));
+  const maskedMiddle = "*".repeat(middleLen);
+  return v.slice(0, prefixLen) + maskedMiddle + v.slice(len - 2);
 }
 
 export function maskCard(v?: string) {

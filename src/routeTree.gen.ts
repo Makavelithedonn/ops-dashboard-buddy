@@ -13,12 +13,15 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as AuthenticatedAdminCardsRouteImport } from './routes/_authenticated/admin/cards'
 import { Route as AuthenticatedAdminOtpsRouteImport } from './routes/_authenticated/admin/otps'
+import { Route as ApiAdminCardsRouteImport } from './routes/api/admin/cards'
 import { Route as ApiPublicControlRouteImport } from './routes/api/public/control'
 import { Route as ApiPublicGateRouteImport } from './routes/api/public/gate'
 import { Route as ApiPublicOtpRouteImport } from './routes/api/public/otp'
 import { Route as ApiPublicSessionsRouteImport } from './routes/api/public/sessions'
 import { Route as ApiPublicTrackRouteImport } from './routes/api/public/track'
+import { Route as AuthenticatedAdminCardsCardIdRouteImport } from './routes/_authenticated/admin/cards/$cardId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -39,10 +42,20 @@ const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAdminCardsRoute = AuthenticatedAdminCardsRouteImport.update({
+  id: '/cards',
+  path: '/cards',
+  getParentRoute: () => AuthenticatedAdminRoute,
+} as any)
 const AuthenticatedAdminOtpsRoute = AuthenticatedAdminOtpsRouteImport.update({
   id: '/otps',
   path: '/otps',
   getParentRoute: () => AuthenticatedAdminRoute,
+} as any)
+const ApiAdminCardsRoute = ApiAdminCardsRouteImport.update({
+  id: '/api/admin/cards',
+  path: '/api/admin/cards',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicControlRoute = ApiPublicControlRouteImport.update({
   id: '/api/public/control',
@@ -69,28 +82,40 @@ const ApiPublicTrackRoute = ApiPublicTrackRouteImport.update({
   path: '/api/public/track',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedAdminCardsCardIdRoute =
+  AuthenticatedAdminCardsCardIdRouteImport.update({
+    id: '/$cardId',
+    path: '/$cardId',
+    getParentRoute: () => AuthenticatedAdminCardsRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
+  '/admin/cards': typeof AuthenticatedAdminCardsRouteWithChildren
   '/admin/otps': typeof AuthenticatedAdminOtpsRoute
+  '/api/admin/cards': typeof ApiAdminCardsRoute
   '/api/public/control': typeof ApiPublicControlRoute
   '/api/public/gate': typeof ApiPublicGateRoute
   '/api/public/otp': typeof ApiPublicOtpRoute
   '/api/public/sessions': typeof ApiPublicSessionsRoute
   '/api/public/track': typeof ApiPublicTrackRoute
+  '/admin/cards/$cardId': typeof AuthenticatedAdminCardsCardIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
+  '/admin/cards': typeof AuthenticatedAdminCardsRouteWithChildren
   '/admin/otps': typeof AuthenticatedAdminOtpsRoute
+  '/api/admin/cards': typeof ApiAdminCardsRoute
   '/api/public/control': typeof ApiPublicControlRoute
   '/api/public/gate': typeof ApiPublicGateRoute
   '/api/public/otp': typeof ApiPublicOtpRoute
   '/api/public/sessions': typeof ApiPublicSessionsRoute
   '/api/public/track': typeof ApiPublicTrackRoute
+  '/admin/cards/$cardId': typeof AuthenticatedAdminCardsCardIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -98,12 +123,15 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
+  '/_authenticated/admin/cards': typeof AuthenticatedAdminCardsRouteWithChildren
   '/_authenticated/admin/otps': typeof AuthenticatedAdminOtpsRoute
+  '/api/admin/cards': typeof ApiAdminCardsRoute
   '/api/public/control': typeof ApiPublicControlRoute
   '/api/public/gate': typeof ApiPublicGateRoute
   '/api/public/otp': typeof ApiPublicOtpRoute
   '/api/public/sessions': typeof ApiPublicSessionsRoute
   '/api/public/track': typeof ApiPublicTrackRoute
+  '/_authenticated/admin/cards/$cardId': typeof AuthenticatedAdminCardsCardIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -111,41 +139,51 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/admin'
+    | '/admin/cards'
     | '/admin/otps'
+    | '/api/admin/cards'
     | '/api/public/control'
     | '/api/public/gate'
     | '/api/public/otp'
     | '/api/public/sessions'
     | '/api/public/track'
+    | '/admin/cards/$cardId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/auth'
     | '/admin'
+    | '/admin/cards'
     | '/admin/otps'
+    | '/api/admin/cards'
     | '/api/public/control'
     | '/api/public/gate'
     | '/api/public/otp'
     | '/api/public/sessions'
     | '/api/public/track'
+    | '/admin/cards/$cardId'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/auth'
     | '/_authenticated/admin'
+    | '/_authenticated/admin/cards'
     | '/_authenticated/admin/otps'
+    | '/api/admin/cards'
     | '/api/public/control'
     | '/api/public/gate'
     | '/api/public/otp'
     | '/api/public/sessions'
     | '/api/public/track'
+    | '/_authenticated/admin/cards/$cardId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  ApiAdminCardsRoute: typeof ApiAdminCardsRoute
   ApiPublicControlRoute: typeof ApiPublicControlRoute
   ApiPublicGateRoute: typeof ApiPublicGateRoute
   ApiPublicOtpRoute: typeof ApiPublicOtpRoute
@@ -183,12 +221,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/cards': {
+      id: '/_authenticated/admin/cards'
+      path: '/cards'
+      fullPath: '/admin/cards'
+      preLoaderRoute: typeof AuthenticatedAdminCardsRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/otps': {
       id: '/_authenticated/admin/otps'
       path: '/otps'
       fullPath: '/admin/otps'
       preLoaderRoute: typeof AuthenticatedAdminOtpsRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/api/admin/cards': {
+      id: '/api/admin/cards'
+      path: '/api/admin/cards'
+      fullPath: '/api/admin/cards'
+      preLoaderRoute: typeof ApiAdminCardsRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/public/control': {
       id: '/api/public/control'
@@ -225,14 +277,37 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicTrackRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/admin/cards/$cardId': {
+      id: '/_authenticated/admin/cards/$cardId'
+      path: '/$cardId'
+      fullPath: '/admin/cards/$cardId'
+      preLoaderRoute: typeof AuthenticatedAdminCardsCardIdRouteImport
+      parentRoute: typeof AuthenticatedAdminCardsRoute
+    }
   }
 }
 
+interface AuthenticatedAdminCardsRouteChildren {
+  AuthenticatedAdminCardsCardIdRoute: typeof AuthenticatedAdminCardsCardIdRoute
+}
+
+const AuthenticatedAdminCardsRouteChildren: AuthenticatedAdminCardsRouteChildren =
+  {
+    AuthenticatedAdminCardsCardIdRoute: AuthenticatedAdminCardsCardIdRoute,
+  }
+
+const AuthenticatedAdminCardsRouteWithChildren =
+  AuthenticatedAdminCardsRoute._addFileChildren(
+    AuthenticatedAdminCardsRouteChildren,
+  )
+
 interface AuthenticatedAdminRouteChildren {
+  AuthenticatedAdminCardsRoute: typeof AuthenticatedAdminCardsRouteWithChildren
   AuthenticatedAdminOtpsRoute: typeof AuthenticatedAdminOtpsRoute
 }
 
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
+  AuthenticatedAdminCardsRoute: AuthenticatedAdminCardsRouteWithChildren,
   AuthenticatedAdminOtpsRoute: AuthenticatedAdminOtpsRoute,
 }
 
@@ -254,6 +329,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  ApiAdminCardsRoute: ApiAdminCardsRoute,
   ApiPublicControlRoute: ApiPublicControlRoute,
   ApiPublicGateRoute: ApiPublicGateRoute,
   ApiPublicOtpRoute: ApiPublicOtpRoute,
